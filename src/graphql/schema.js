@@ -4,28 +4,27 @@ import {
   GraphQLID,
   GraphQLString,
   GraphQLList,
-} from 'graphql';
+  GraphQLBoolean,
+} from "graphql";
+import axios from "axios";
 
-const PersonType = new GraphQLObjectType({
-  name: 'Person',
+const PeopleType = new GraphQLObjectType({
+  name: "People",
   fields: {
-    id: { type: GraphQLID },
     name: { type: GraphQLString },
+    gender: { type: GraphQLString },
   },
 });
 
-const peopleData = [
-  { id: 1, name: 'John Smith' },
-  { id: 2, name: 'Sara Smith' },
-  { id: 3, name: 'Budd Deey' },
-];
-
 const QueryType = new GraphQLObjectType({
-  name: 'Query',
+  name: "Query",
   fields: {
     people: {
-      type: new GraphQLList(PersonType),
-      resolve: () => peopleData,
+      type: new GraphQLList(PeopleType),
+      resolve: async () => {
+        const result = await axios.get("https://swapi.dev/api/people/");
+        return result?.data?.results;
+      },
     },
   },
 });
